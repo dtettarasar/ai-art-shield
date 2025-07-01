@@ -16,7 +16,9 @@ class Img_Data:
             logging.info("init load_file method from the img data class")
             logging.info(f"img file to load is located at: {self.img_path}")
 
-        return None
+        if not os.path.exists(self.img_path):
+
+            raise FileNotFoundError(f"The input file '{self.img_path}' was not found.")
 
     @property
     def img_path(self):
