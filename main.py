@@ -6,6 +6,8 @@ import logging
 import argparse
 import numpy as np
 
+from img_data import Img_Data
+
 def main():
 
     print("Hello from ai-art-shield!")
@@ -28,6 +30,8 @@ def main():
         logging.info(f"Image to protect : {args.input}")
         logging.info(f"Saved file path : {args.output}")
         logging.info(f"Strength protection : {args.strength}")
+
+        img = Img_Data('test_img', args.verbose)
         
 
     elif args.command == 'verify':

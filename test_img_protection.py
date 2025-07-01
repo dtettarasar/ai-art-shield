@@ -10,3 +10,4 @@ def test_init_class():
     img_debug = Img_Data('test_img_debug.jpg', True)
     assert img_debug.img_path == 'test_img_debug.jpg'
     assert img_debug.debug_mode == True
+
