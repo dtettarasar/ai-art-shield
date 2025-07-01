@@ -6,10 +6,9 @@ from PIL import Image, UnidentifiedImageError
 
 class Img_Data:
 
-    def __init__(self, img_path, debug_mode=False):
+    def __init__(self, img_path):
         
         self.img_path = img_path
-        self.debug_mode = debug_mode
 
         self.load_file()
     
@@ -20,10 +19,8 @@ class Img_Data:
         Returns a Pillow Image object, or throws an exception on error.
         """
 
-        if self.debug_mode == True:
-
-            logging.info("init load_file method from the img data class")
-            logging.info(f"img file to load is located at: {self.img_path}")
+        logging.info("init load_file method from the img data class")
+        logging.info(f"img file to load is located at: {self.img_path}")
 
         if not os.path.exists(self.img_path):
 
@@ -52,14 +49,6 @@ class Img_Data:
     @img_path.setter
     def img_path(self, value):
         self._img_path = value
-
-    @property
-    def debug_mode(self):
-        return self._debug_mode
-    
-    @debug_mode.setter
-    def debug_mode(self, value):
-        self._debug_mode = value
 
     @property
     def img_file(self):

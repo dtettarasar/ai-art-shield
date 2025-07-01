@@ -31,7 +31,7 @@ def main():
         logging.info(f"Saved file path : {args.output}")
         logging.info(f"Strength protection : {args.strength}")
             
-        img = Img_Data(args.input, args.verbose)
+        img = Img_Data(args.input)
 
     elif args.command == 'verify':
         
