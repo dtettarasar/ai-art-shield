@@ -1,4 +1,4 @@
-class Img_Protection:
+class Img_Data:
 
     def __init__(self, img_path, debug_mode=False):
         
