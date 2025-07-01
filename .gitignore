@@ -1,1 +1,18 @@
-__pycache__
+# Environnement virtuel Python
+venv/
+
+# Fichiers Python compilés
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Fichiers de logs ou de débug
+*.log
+
+# Fichiers systèmes (souvent créés par erreur)
+.DS_Store
+Thumbs.db
+
+# Ignorer les fichiers de test générés
+test_files/output_files/*
+!test_files/output_files/description.txt
