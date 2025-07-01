@@ -1,5 +1,9 @@
 import logging
 import os
+
+import PIL
+from PIL import Image, UnidentifiedImageError
+
 class Img_Data:
 
     def __init__(self, img_path, debug_mode=False):
@@ -11,6 +15,11 @@ class Img_Data:
     
     def load_file(self):
 
+        """
+        Loads an image file using Pillow and performs initial checks.
+        Returns a Pillow Image object, or throws an exception on error.
+        """
+
         if self.debug_mode == True:
 
             logging.info("init load_file method from the img data class")
@@ -19,6 +28,21 @@ class Img_Data:
         if not os.path.exists(self.img_path):
 
             raise FileNotFoundError(f"The input file '{self.img_path}' was not found.")
+        
+        try:
+
+            img_pil = Image.open(self.img_path)
+
+        except UnidentifiedImageError:
+
+            # Cette exception est levée par Pillow si le fichier n'est pas une image valide
+            raise UnidentifiedImageError(f"Unable to identify or open image file '{self.img_path}'. Check format or corruption.")
+
+        except Exception as e:
+
+            # Capture toute autre erreur inattendue lors de l'ouverture du fichier
+            raise IOError(f"An unexpected error occurred while opening the image: {e}")
+
 
     @property
     def img_path(self):
