@@ -125,6 +125,13 @@ def test_numpy_to_pil(img_cs50_instance, img_cookie_instance):
     assert img_cookie_from_numpy.width == img_cookie_instance.img_file.width
     assert img_cookie_from_numpy.height == img_cookie_instance.img_file.height
 
+    # Vérifier si les valeurs des pixels sont les mêmes après l'aller-retour
+    # Convertir les deux en float pour la comparaison.
+    reconverted_np_cs50 = np.array(img_cs50_from_numpy)
+    assert np.allclose(img_cs50_instance.numpy_array.astype(float), reconverted_np_cs50.astype(float), atol=1)
+
+    reconverted_np_cookie = np.array(img_cookie_from_numpy)
+    assert np.allclose(img_cookie_instance.numpy_array.astype(float), reconverted_np_cookie.astype(float), atol=1)
 
 
 # End of test for convert_numpy_to_pil method------------------------------
