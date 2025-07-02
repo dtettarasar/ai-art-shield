@@ -113,11 +113,19 @@ def test_numpy_to_pil(img_cs50_instance, img_cookie_instance):
     # Appel de la méthode convert_numpy_to_pil sur l'instance,
     # en lui passant le numpy_array de cette même instance.
     img_cs50_from_numpy = img_cs50_instance.convert_numpy_to_pil(img_cs50_instance.numpy_array)
+    img_cookie_from_numpy = img_cookie_instance.convert_numpy_to_pil(img_cookie_instance.numpy_array)
 
     assert isinstance(img_cs50_from_numpy, Image.Image)
     assert img_cs50_from_numpy.mode == "RGB"
     assert img_cs50_from_numpy.width == img_cs50_instance.img_file.width
     assert img_cs50_from_numpy.height == img_cs50_instance.img_file.height
+
+    assert isinstance(img_cookie_from_numpy, Image.Image)
+    assert img_cookie_from_numpy.mode == "RGB"
+    assert img_cookie_from_numpy.width == img_cookie_instance.img_file.width
+    assert img_cookie_from_numpy.height == img_cookie_instance.img_file.height
+
+
 
 # End of test for convert_numpy_to_pil method------------------------------
 
