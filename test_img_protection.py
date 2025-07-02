@@ -47,3 +47,21 @@ def test_load_image_file_errors():
     with pytest.raises(UnidentifiedImageError):
         Img_Data("test_files/test_files.txt")
 
+
+def test_load_image_file_unexpected_io_error(mocker):
+    # Simule une IOError lors de l'appel à Image.open
+    # On patche Image.open car c'est la fonction externe qui pourrait lever cette erreur
+    mocker.patch('PIL.Image.open', side_effect=IOError("Simulated unexpected I/O error"))
+
+    # On a besoin d'un fichier existant pour que la première vérification (os.path.exists) passe
+    # Mais Image.open va ensuite échouer
+    dummy_existing_file = "test_files/cs50.jpg" # Ou n'importe quel fichier existant
+
+    with pytest.raises(IOError) as excinfo:
+        Img_Data(dummy_existing_file)
+
+    # Tu peux aussi vérifier le message d'erreur si tu le souhaites
+    assert "Simulated unexpected I/O error" in str(excinfo.value)
+    assert "An unexpected error occurred while opening the image" in str(excinfo.value) # Vérifie le message de ta fonction
+
+
