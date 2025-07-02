@@ -103,3 +103,5 @@ def test_pil_to_numpy(img_cs50_instance, img_cookie_instance):
     assert img_cookie_instance.numpy_array.ndim == 3
     assert img_cookie_instance.numpy_array.shape[2] == 3
     assert img_cookie_instance.numpy_array.dtype == np.uint8
+
+# End of test for convert_pil_to_numpy method------------------------------
