@@ -3,6 +3,7 @@ import os
 
 import PIL
 from PIL import Image, UnidentifiedImageError
+import numpy as np
 
 class Img_Data:
 
@@ -10,7 +11,7 @@ class Img_Data:
         
         self.img_path = img_path
 
-        self.img_file = self.load_file()
+        self.load_file()
 
         logging.debug("finish to load file in img data class")
         logging.debug("img file: ")
@@ -54,7 +55,7 @@ class Img_Data:
                 logging.debug(f"Converting image from {img_pil.mode} to RGB mode.")
                 img_pil = img_pil.convert('RGB')
             
-            return img_pil
+            self.img_file = img_pil
 
 
         except UnidentifiedImageError:
@@ -69,7 +70,13 @@ class Img_Data:
     
     # ces deux fonctions servent à convertir un fichier image en array numpy et vice versa. Cette conversion de la donnée est nécessaire pour appliquer les protections.
     def convert_pil_to_numpy(self):
-        """"""
+
+        """Convertit un objet PIL Image en un tableau NumPy."""
+        # S'assurer que l'image est en RGB avant la conversion pour cohérence
+        if self.img_file.mode != "RGB":
+            self.img_file = self.img_file.convert('RGB')
+        
+        return np.array(self.img_file)
     
     def convert_numpy_to_pil(self):
         """"""
