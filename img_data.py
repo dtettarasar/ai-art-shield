@@ -78,9 +78,46 @@ class Img_Data:
             self.img_file = self.img_file.convert('RGB')
     
         self.numpy_array = np.array(self.img_file)
+        logging.debug("Image converted from PIL to NumPy array and stored in self.numpy_array.")
     
-    def convert_numpy_to_pil(self):
-        """"""
+    def convert_numpy_to_pil(self, numpy_array: np.ndarray) -> Image.Image:
+        
+        """
+        Convertit un tableau NumPy donné en un objet PIL Image.
+        Cette méthode ne modifie pas l'état interne de l'objet Img_Data.
+        
+        Args:
+            numpy_array (np.ndarray): Le tableau NumPy à convertir.
+                                      Il doit être de type np.uint8 avec 2 ou 3 dimensions.
+
+        Returns:
+            PIL.Image.Image: L'objet PIL Image résultant de la conversion.
+        
+        Raises:
+            TypeError: Si l'entrée n'est pas un tableau NumPy.
+            ValueError: Si le tableau NumPy n'est pas dans un format attendu.
+        """
+
+        logging.info("Attempting to convert NumPy array to PIL Image.")
+
+        if not isinstance(numpy_array, np.ndarray):
+            raise TypeError("Input must be a NumPy array.")
+        
+        # S'assurer que le type de données est correct pour PIL (généralement np.uint8)
+        # S'il n'est pas uint8, le convertir.
+        if numpy_array.dtype != np.uint8:
+            logging.warning(f"NumPy array has dtype {numpy_array.dtype}, converting to np.uint8.")
+            numpy_array = numpy_array.astype(np.uint8)
+
+        # Pillow peut déduire le mode (RGB, L, etc.) de la forme du tableau
+        # Par exemple: (H, W) -> 'L', (H, W, 3) -> 'RGB', (H, W, 4) -> 'RGBA'
+        try:
+            pil_image = Image.fromarray(numpy_array)
+            logging.info(f"NumPy array converted to PIL Image. Mode: {pil_image.mode}, Size: {pil_image.size}")
+            return pil_image
+        except Exception as e:
+            # Capturer les erreurs potentielles de Image.fromarray (ex: forme inattendue)
+            raise ValueError(f"Failed to convert NumPy array to PIL Image: {e}")
 
     @property
     def img_path(self):
