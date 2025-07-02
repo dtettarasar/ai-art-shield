@@ -39,8 +39,6 @@ def test_load_image_file():
     assert img_cookie.img_file.height == 1600
     assert img_cookie.img_file.format == "WEBP"
 
-
-
 def test_load_image_file_errors():
 
     with pytest.raises(FileNotFoundError):
@@ -48,7 +46,6 @@ def test_load_image_file_errors():
 
     with pytest.raises(UnidentifiedImageError):
         Img_Data("test_files/test_files.txt")
-
 
 def test_load_image_file_unexpected_io_error(mocker):
     # Simule une IOError lors de l'appel à Image.open
