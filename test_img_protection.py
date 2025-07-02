@@ -13,6 +13,8 @@ def test_init_class():
     
     assert img_cs50.img_path == 'test_files/cs50.jpg'
 
+# Test for load_file method------------------------------
+
 def test_load_image_file():
 
     img_cs50 = Img_Data('test_files/cs50.jpg')
@@ -65,3 +67,16 @@ def test_load_image_file_unexpected_io_error(mocker):
     assert "An unexpected error occurred while opening the image" in str(excinfo.value) # Vérifie le message de ta fonction
 
 
+def test_load_image_file_other_unexpected_exception(mocker):
+    # Simule une autre Exception inattendue lors de l'appel à Image.open
+    mocker.patch('PIL.Image.open', side_effect=Exception("Something really bad happened!"))
+
+    dummy_existing_file = "test_files/cs50.jpg"
+
+    with pytest.raises(IOError) as excinfo: # Ton code convertit toutes les 'Exception' en 'IOError'
+        Img_Data(dummy_existing_file)
+
+    assert "Something really bad happened!" in str(excinfo.value)
+    assert "An unexpected error occurred while opening the image" in str(excinfo.value)
+
+# End of test for load_file method------------------------------
