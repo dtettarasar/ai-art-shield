@@ -95,7 +95,11 @@ def test_load_image_file_other_unexpected_exception(mocker):
 def test_pil_to_numpy(img_cs50_instance, img_cookie_instance):
 
     assert type(img_cs50_instance.numpy_array) == np.ndarray
-
     assert img_cs50_instance.numpy_array.ndim == 3 # Doit être un tableau 3D (hauteur, largeur, canaux)
     assert img_cs50_instance.numpy_array.shape[2] == 3 # Doit avoir 3 canaux (RGB)
     assert img_cs50_instance.numpy_array.dtype == np.uint8 # Doit être de type uint8 (0-255)
+
+    assert type(img_cookie_instance.numpy_array) == np.ndarray
+    assert img_cookie_instance.numpy_array.ndim == 3
+    assert img_cookie_instance.numpy_array.shape[2] == 3
+    assert img_cookie_instance.numpy_array.dtype == np.uint8
