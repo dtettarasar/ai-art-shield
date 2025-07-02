@@ -5,6 +5,8 @@ from PIL import Image, UnidentifiedImageError
 from PIL.JpegImagePlugin import JpegImageFile
 from PIL.WebPImagePlugin import WebPImageFile
 
+import numpy as np
+
 from img_data import Img_Data
 
 
@@ -89,3 +91,11 @@ def test_load_image_file_other_unexpected_exception(mocker):
 # End of test for load_file method------------------------------
 
 # Test for convert_pil_to_numpy method------------------------------
+
+def test_pil_to_numpy(img_cs50_instance, img_cookie_instance):
+
+    assert type(img_cs50_instance.numpy_array) == np.ndarray
+
+    assert img_cs50_instance.numpy_array.ndim == 3 # Doit être un tableau 3D (hauteur, largeur, canaux)
+    assert img_cs50_instance.numpy_array.shape[2] == 3 # Doit avoir 3 canaux (RGB)
+    assert img_cs50_instance.numpy_array.dtype == np.uint8 # Doit être de type uint8 (0-255)
