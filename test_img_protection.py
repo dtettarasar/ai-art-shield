@@ -7,11 +7,24 @@ from PIL.WebPImagePlugin import WebPImageFile
 
 from img_data import Img_Data
 
-def test_init_class():
 
-    img_cs50 = Img_Data('test_files/cs50.jpg')
+# --- Fixtures pour Img_Data ---
+
+@pytest.fixture
+def img_cs50_instance():
+    """Fournit une instance de Img_Data pour 'cs50.jpg'."""
+    return Img_Data('test_files/cs50.jpg')
+
+@pytest.fixture
+def img_cookie_instance():
+    """Fournit une instance de Img_Data pour 'cookie_monster.webp'."""
+    return Img_Data("test_files/cookie_monster.webp")
+
+def test_init_class(img_cs50_instance, img_cookie_instance):
     
-    assert img_cs50.img_path == 'test_files/cs50.jpg'
+    assert img_cs50_instance.img_path == 'test_files/cs50.jpg'
+    assert img_cookie_instance.img_path == 'test_files/cookie_monster.webp'
+
 
 # Test for load_file method------------------------------
 
@@ -77,3 +90,5 @@ def test_load_image_file_other_unexpected_exception(mocker):
     assert "An unexpected error occurred while opening the image" in str(excinfo.value)
 
 # End of test for load_file method------------------------------
+
+# Test for convert_pil_to_numpy method------------------------------

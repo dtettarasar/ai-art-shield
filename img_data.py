@@ -12,6 +12,7 @@ class Img_Data:
         self.img_path = img_path
 
         self.load_file()
+        self.convert_pil_to_numpy()
 
         logging.debug("finish to load file in img data class")
         logging.debug("img file: ")
@@ -75,8 +76,8 @@ class Img_Data:
         # S'assurer que l'image est en RGB avant la conversion pour cohérence
         if self.img_file.mode != "RGB":
             self.img_file = self.img_file.convert('RGB')
-        
-        return np.array(self.img_file)
+    
+        self.numpy_array = np.array(self.img_file)
     
     def convert_numpy_to_pil(self):
         """"""
@@ -98,3 +99,11 @@ class Img_Data:
     def img_file(self, value):
 
         self._img_file = value
+
+    @property
+    def numpy_array(self):
+        return self._numpy_array
+
+    @numpy_array.setter
+    def numpy_array(self, value):
+        self._numpy_array = value
