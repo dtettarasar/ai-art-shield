@@ -66,7 +66,13 @@ class Img_Data:
 
             # Capture toute autre erreur inattendue lors de l'ouverture du fichier
             raise IOError(f"An unexpected error occurred while opening the image: {e}")
-
+    
+    # ces deux fonctions servent à convertir un fichier image en array numpy et vice versa. Cette conversion de la donnée est nécessaire pour appliquer les protections.
+    def convert_pil_to_numpy(self):
+        """"""
+    
+    def convert_numpy_to_pil(self):
+        """"""
 
     @property
     def img_path(self):
