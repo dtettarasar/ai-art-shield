@@ -136,3 +136,36 @@ def test_numpy_to_pil(img_cs50_instance, img_cookie_instance):
 
 # End of test for convert_numpy_to_pil method------------------------------
 
+# Test _apply_dct_watermark_to_channel()------------------------------
+
+def test_dct_watermark_output_properties(img_cs50_instance):
+
+    """
+    Vérifie les propriétés de base du canal après application du filigrane DCT.
+    """
+
+    # Accède au tableau NumPy depuis l'instance
+    img_np = img_cs50_instance.numpy_array
+
+    # Récupère le canal rouge (index 0) et le convertit en float
+    # Comme la méthode _apply_dct_watermark_to_channel soustrait 128.0
+    # et travaille souvent avec des floats pour les transformées.
+    channel_data = img_np[:, :, 0].astype(float)
+    strength = 5.0
+    seed = 42
+
+    watermarked_channel = img_cs50_instance._apply_dct_watermark_to_channel(channel_data.copy(), strength, seed)
+
+    # 1. Vérifier le type de données
+    assert watermarked_channel.dtype == np.uint8
+
+    # 2. Vérifier les dimensions
+    assert watermarked_channel.shape == channel_data.shape
+
+    # 3. Vérifier que les valeurs de pixels sont dans la plage [0, 255]
+    assert np.min(watermarked_channel) >= 0
+    assert np.max(watermarked_channel) <= 255
+
+    
+
+# End of test _apply_dct_watermark_to_channel()------------------------------

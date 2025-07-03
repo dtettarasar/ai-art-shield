@@ -5,6 +5,8 @@ import PIL
 from PIL import Image, UnidentifiedImageError
 import numpy as np
 
+from scipy.fftpack import dct, idct
+
 class Img_Data:
 
     def __init__(self, img_path):
@@ -118,6 +120,70 @@ class Img_Data:
         except Exception as e:
             # Capturer les erreurs potentielles de Image.fromarray (ex: forme inattendue)
             raise ValueError(f"Failed to convert NumPy array to PIL Image: {e}")
+    
+    def _apply_dct_watermark_to_channel(self, channel_data, strength, seed_value):
+
+        """
+        Prend un seul canal de couleur (par exemple, le canal Rouge) sous forme de tableau NumPy 2D et y applique le filigrane.
+        """
+
+        logging.debug(f"Starting channel processing (shape: {channel_data.shape})")
+
+        # 1. Centrage des données des pixels
+        # Les valeurs de pixels sont généralement entre 0 et 255.
+        # Pour que la DCT fonctionne mieux (et pour des raisons mathématiques de symétrie),
+        # il est courant de centrer les données autour de zéro.
+        # On soustrait 128 (qui est environ la moitié de 255).
+        
+        centered_channel = channel_data - 128.0
+        logging.debug(f"Centered channel. Min: {np.min(centered_channel)}, Max: {np.max(centered_channel)}")
+
+        # 2. Application de la Transformation Cosinus Discrète (DCT)
+        # scipy.fftpack.dct effectue la DCT.
+        # Pour une image 2D (qui est ce qu'est un canal), la DCT doit être appliquée deux fois:
+        # d'abord sur les lignes, puis sur les colonnes (ou vice-versa).
+        # .T (transpose) est utilisé pour appliquer la DCT le long des colonnes après l'avoir appliquée le long des lignes.
+        # 'norm='ortho'' assure une transformation orthogonale, ce qui signifie que l'IDCT est simplement l'inverse de la DCT.
+        dct_coeffs = dct(dct(centered_channel.T, norm='ortho').T, norm='ortho')
+        logging.debug(f"DCT applied. Coeffs[0,0]: {dct_coeffs[0,0]:.2f}")
+
+        # 3. Génération du Filigrane (Watermark)
+        # np.random.seed(seed_value): Fixe la graine du générateur de nombres aléatoires.
+        # C'est CRUCIAL. Si tu appliques le filigrane à nouveau (par exemple, pour la vérification),
+        # tu auras besoin de générer EXACTEMENT le même bruit aléatoire. La seed garantit cela.
+        # watermark = np.random.normal(0, 2, channel_data.shape): Génère un tableau de bruit
+        # aléatoire qui suit une distribution normale (gaussienne) avec une moyenne de 0 et
+        # un écart-type de 2. La taille du tableau est la même que celle du canal d'image.
+        # Ce bruit sera notre "signature" ou "protection" ajoutée.
+        np.random.seed(seed_value)
+        watermark = np.random.normal(0, 2, channel_data.shape)
+        logging.debug(f"Watermark generated. Min: {np.min(watermark):.2f}, Max: {np.max(watermark):.2f}")
+
+        # 4. Injection du Filigrane dans les Coefficients DCT
+        # C'est l'étape clé du filigranage. Nous ajoutons le bruit généré aux coefficients DCT.
+        # La 'strength' est un facteur de mise à l'échelle. Plus la force est élevée,
+        # plus le filigrane est prononcé (plus visible, mais aussi plus résistant).
+        dct_coeffs += strength * watermark
+        logging.debug(f"Watermark added to DCT coefficients. New Coeffs[0,0]: {dct_coeffs[0,0]:.2f}")
+
+        # 5. Application de la Transformation Cosinus Discrète Inverse (IDCT)
+        # Nous utilisons idct pour revenir du domaine fréquentiel au domaine spatial (pixels).
+        # C'est l'inverse exact de l'étape 2.
+        reconstructed_centered_channel = idct(idct(dct_coeffs.T, norm='ortho').T, norm='ortho')
+        logging.debug(f"IDCT applied.")
+
+        # 6. Dé-centrage et Limitation des valeurs des pixels
+        # Nous ajoutons 128.0 pour ramener les valeurs à la plage 0-255.
+        # np.clip(..., 0, 255): Les transformations peuvent parfois produire des valeurs
+        # en dehors de la plage valide [0, 255]. `np.clip` assure que toutes les valeurs
+        # restent dans cette plage en les "coupant" si elles sont trop basses (<0) ou trop hautes (>255).
+        # .astype(np.uint8): Convertit le tableau en type entier non signé de 8 bits,
+        # ce qui est le format standard pour les pixels d'image (0-255).
+        watermarked_channel = np.clip(reconstructed_centered_channel + 128.0, 0, 255).astype(np.uint8)
+        logging.debug(f"Processed and clipped channel. Min: {np.min(watermarked_channel)}, Max: {np.max(watermarked_channel)}")
+    
+        return watermarked_channel
+
 
     @property
     def img_path(self):
