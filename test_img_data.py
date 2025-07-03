@@ -224,4 +224,27 @@ def test_dct_watermark_no_change_with_zero_strength(img_cs50_instance):
     # Cela couvre les arrondis légers qui peuvent survenir.
 
 
+def test_dct_watermark_reproducibility(img_cs50_instance):
+    """
+    Vérifie que le filigrane est reproductible avec la même graine et la même force.
+    """
+
+    # Accède au tableau NumPy depuis l'instance
+    img_np = img_cs50_instance.numpy_array
+
+    original_channel = img_np[:, :, 0].astype(float)
+    strength = 7.0
+    seed = 123
+
+    watermarked_channel_1 = img_cs50_instance._apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed
+    )
+    watermarked_channel_2 = img_cs50_instance._apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed # Même force et même graine
+    )
+
+    # Les deux résultats doivent être identiques pixel par pixel
+    assert np.array_equal(watermarked_channel_1, watermarked_channel_2)
+
+
 # End of test _apply_dct_watermark_to_channel()------------------------------
