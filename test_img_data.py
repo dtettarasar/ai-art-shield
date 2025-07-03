@@ -247,4 +247,29 @@ def test_dct_watermark_reproducibility(img_cs50_instance):
     assert np.array_equal(watermarked_channel_1, watermarked_channel_2)
 
 
+def test_dct_watermark_different_seed_different_result(img_cs50_instance):
+    
+    """
+    Vérifie que des graines différentes produisent des résultats différents.
+    """
+
+    # Accède au tableau NumPy depuis l'instance
+    img_np = img_cs50_instance.numpy_array
+
+    original_channel = img_np[:, :, 0].astype(float)
+    strength = 7.0
+    seed1 = 123
+    seed2 = 456 # Graine différente
+
+    watermarked_channel_1 = img_cs50_instance._apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed1
+    )
+    watermarked_channel_2 = img_cs50_instance._apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed2
+    )
+
+    # Les deux résultats ne devraient PAS être identiques (sauf cas rarissimes de coïncidence de bruit)
+    assert not np.array_equal(watermarked_channel_1, watermarked_channel_2)
+
+
 # End of test _apply_dct_watermark_to_channel()------------------------------
