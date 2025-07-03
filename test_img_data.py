@@ -201,4 +201,27 @@ def test_dct_watermark_introduces_change(img_cs50_instance):
     assert mean_diff > 0.5 # Avec strength=5, la différence devrait être notable
 
 
+def test_dct_watermark_no_change_with_zero_strength(img_cs50_instance):
+    """
+    Vérifie qu'un filigrane avec strength = 0 n'introduit pratiquement aucun changement.
+    """
+
+    # Accède au tableau NumPy depuis l'instance
+    img_np = img_cs50_instance.numpy_array
+
+    original_channel = img_np[:, :, 0].astype(float)
+    strength = 0.0 # Force nulle
+    seed = 42
+
+    watermarked_channel = img_cs50_instance._apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed
+    )
+    
+    # Il devrait y avoir des différences MINIMES dues aux conversions float/uint8 et arrondis
+    # np.allclose est parfait ici pour gérer ces petites tolérances
+    assert np.allclose(original_channel.astype(np.uint8), watermarked_channel, atol=1)
+    # atol=1 signifie une tolérance absolue d'une unité sur les valeurs de pixel (0-255).
+    # Cela couvre les arrondis légers qui peuvent survenir.
+
+
 # End of test _apply_dct_watermark_to_channel()------------------------------
