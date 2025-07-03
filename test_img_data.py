@@ -272,4 +272,33 @@ def test_dct_watermark_different_seed_different_result(img_cs50_instance):
     assert not np.array_equal(watermarked_channel_1, watermarked_channel_2)
 
 
+def test_dct_watermark_strength_scaling(img_cs50_instance):
+    """
+    Vérifie que l'augmentation de la force augmente l'ampleur du changement.
+    """
+
+    # Accède au tableau NumPy depuis l'instance
+    img_np = img_cs50_instance.numpy_array
+
+    original_channel = img_np[:, :, 0].astype(float) # Garder en float pour plus de précision
+
+    seed = 42
+
+    # Force faible
+    watermarked_low_strength = img_cs50_instance._apply_dct_watermark_to_channel(
+        original_channel.copy(), strength=1.0, seed_value=seed
+    )
+    diff_low = np.mean(np.abs(original_channel - watermarked_low_strength.astype(float)))
+
+    # Force élevée
+    watermarked_high_strength = img_cs50_instance._apply_dct_watermark_to_channel(
+        original_channel.copy(), strength=10.0, seed_value=seed
+    )
+    diff_high = np.mean(np.abs(original_channel - watermarked_high_strength.astype(float)))
+
+    # La différence avec une force élevée doit être significativement plus grande
+    assert diff_high > diff_low * 2 # Par exemple, au moins deux fois plus grande, à ajuster
+
+
+
 # End of test _apply_dct_watermark_to_channel()------------------------------
