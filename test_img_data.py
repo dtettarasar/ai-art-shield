@@ -318,4 +318,22 @@ def test_apply_dct_watermark_returns_numpy_array(img_cs50_instance, img_cookie_i
     assert isinstance(protected_img_np_cs50, np.ndarray)
     assert isinstance(protected_img_np_cookie, np.ndarray)
 
-# End of test apply_dct_protection()------------------------------
+def test_apply_dct_watermark_returns_same_shape(img_cs50_instance, img_cookie_instance):
+
+    """Vérifie que l'image traitée a les mêmes dimensions que l'originale."""
+
+    # Accède au tableau NumPy depuis l'instance
+    img_np_cs50 = img_cs50_instance.numpy_array
+    img_np_cookie = img_cookie_instance.numpy_array
+
+    original_shape_cs50 = img_np_cs50.shape
+    protected_img_np_cs50 = img_cs50_instance.apply_dct_watermark(img_np_cs50, strength=5.0)
+
+    original_shape_cookie = img_np_cookie.shape
+    protected_img_np_cookie = img_cookie_instance.apply_dct_watermark(img_np_cookie, strength=5.0)
+
+    assert protected_img_np_cs50.shape == original_shape_cs50
+    assert protected_img_np_cookie.shape == original_shape_cookie
+
+
+# End of test apply_dct_watermark()------------------------------
