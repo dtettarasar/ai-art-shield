@@ -335,7 +335,7 @@ def test_apply_dct_watermark_returns_same_shape(img_cs50_instance, img_cookie_in
     assert protected_img_np_cs50.shape == original_shape_cs50
     assert protected_img_np_cookie.shape == original_shape_cookie
 
-def test_apply_dct_protection_modifies_image(img_cs50_instance, img_cookie_instance):
+def test_apply_dct_watermark_modifies_image(img_cs50_instance, img_cookie_instance):
 
     """Vérifie que la protection modifie réellement les pixels de l'image."""
 
