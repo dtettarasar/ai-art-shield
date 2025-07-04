@@ -304,15 +304,18 @@ def test_dct_watermark_strength_scaling(img_cs50_instance):
 
 # Test apply_dct_watermark()------------------------------
 
-def test_apply_dct_watermark_returns_numpy_array(img_cs50_instance):
+def test_apply_dct_watermark_returns_numpy_array(img_cs50_instance, img_cookie_instance):
 
     """Vérifie que la fonction retourne bien un tableau NumPy."""
 
     # Accède au tableau NumPy depuis l'instance
-    img_np = img_cs50_instance.numpy_array
+    img_np_cs50 = img_cs50_instance.numpy_array
+    img_np_cookie = img_cookie_instance.numpy_array
 
-    protected_img_np = img_cs50_instance.apply_dct_watermark(img_np, strength=5.0)
+    protected_img_np_cs50 = img_cs50_instance.apply_dct_watermark(img_np_cs50, strength=5.0)
+    protected_img_np_cookie = img_cookie_instance.apply_dct_watermark(img_np_cookie, strength=5.0)
 
-    assert isinstance(protected_img_np, np.ndarray)
+    assert isinstance(protected_img_np_cs50, np.ndarray)
+    assert isinstance(protected_img_np_cookie, np.ndarray)
 
 # End of test apply_dct_protection()------------------------------
