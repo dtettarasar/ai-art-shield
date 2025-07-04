@@ -335,5 +335,23 @@ def test_apply_dct_watermark_returns_same_shape(img_cs50_instance, img_cookie_in
     assert protected_img_np_cs50.shape == original_shape_cs50
     assert protected_img_np_cookie.shape == original_shape_cookie
 
+def test_apply_dct_protection_modifies_image(img_cs50_instance, img_cookie_instance):
+
+    """Vérifie que la protection modifie réellement les pixels de l'image."""
+
+    # Accède au tableau NumPy depuis l'instance
+    img_np_cs50 = img_cs50_instance.numpy_array
+    img_np_cookie = img_cookie_instance.numpy_array
+    
+    protected_img_np_cs50 = img_cs50_instance.apply_dct_watermark(img_np_cs50, strength=5.0)
+    protected_img_np_cookie = img_cookie_instance.apply_dct_watermark(img_np_cookie, strength=5.0)
+    
+    # Assure-toi qu'au moins un pixel est différent
+    assert not np.array_equal(img_np_cs50, protected_img_np_cs50)
+    assert not np.array_equal(img_np_cookie, protected_img_np_cookie)
+
+    # Vérifie que les valeurs des pixels restent dans une plage raisonnable (0-255)
+    assert np.all(protected_img_np_cs50 >= 0) and np.all(protected_img_np_cs50 <= 255)
+    assert np.all(protected_img_np_cookie >= 0) and np.all(protected_img_np_cookie <= 255)
 
 # End of test apply_dct_watermark()------------------------------
