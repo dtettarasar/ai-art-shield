@@ -121,7 +121,7 @@ class Img_Data:
             # Capturer les erreurs potentielles de Image.fromarray (ex: forme inattendue)
             raise ValueError(f"Failed to convert NumPy array to PIL Image: {e}")
     
-    def _apply_dct_watermark_to_channel(self, channel_data, strength, seed_value):
+    def _apply_dct_watermark_to_channel(self, channel_data, strength: float, seed_value):
 
         """
         Prend un seul canal de couleur (par exemple, le canal Rouge) sous forme de tableau NumPy 2D et y applique le filigrane.
@@ -183,6 +183,110 @@ class Img_Data:
         logging.debug(f"Processed and clipped channel. Min: {np.min(watermarked_channel)}, Max: {np.max(watermarked_channel)}")
     
         return watermarked_channel
+    
+    def apply_dct_watermark(self, input_np_array: np.ndarray, strength: float) -> np.ndarray: 
+
+        """
+        Applique un filigrane DCT à tous les canaux d'un tableau NumPy donné.
+        Retourne un NOUVEAU tableau NumPy modifié.
+        """
+
+        logging.info(f"Applying DCT watermark with strength={strength}")
+
+        # Travaille TOUJOURS sur une COPIE de l'entrée
+        processed_image_np = input_np_array.copy()
+
+         # --- GESTION DES IMAGES EN NIVEAUX DE GRIS ---
+        if processed_image_np.ndim == 2: # Image en niveaux de gris (H, W)
+
+            """
+            Certaines bibliothèques ou formats d'image (comme certaines images PNG en niveaux de gris, 
+            ou des tableaux NumPy créés directement) peuvent représenter une image en niveaux de gris sous la forme d'un tableau NumPy en deux dimensions ((hauteur, largeur)). 
+            Il n'y a pas de troisième dimension pour les canaux. processed_image_np.ndim == 2 vérifie précisément si le tableau n'a que deux dimensions.
+            """
+
+            logging.warning("Input is a grayscale image. Converting to 3 channels (RGB) for DCT protection.")
+            # Empile le canal gris sur 3 canaux pour simuler une image RGB
+            processed_image_np = np.stack([processed_image_np, processed_image_np, processed_image_np], axis=-1)
+
+            """
+            np.stack() est une fonction NumPy qui empile des tableaux le long d'un nouvel axe.
+            Nous lui passons une liste contenant le même tableau processed_image_np trois fois.
+            axis=-1 signifie que le nouveau canal sera ajouté comme la dernière dimension.
+
+            Le tableau (H, W) devient (H, W, 3). Chaque "canal" de cette nouvelle image RGB est une copie exacte du canal de niveaux de gris original. 
+            Visuellement, l'image reste en niveaux de gris, mais elle est maintenant structurée comme une image couleur.
+            """
+
+        elif processed_image_np.ndim == 3 and processed_image_np.shape[2] == 1: # Image en niveaux de gris (H, W, 1)
+
+            """
+            D'autres bibliothèques (notamment Pillow après un convert('L') et pil_to_numpy, ou des formats spécifiques) peuvent représenter une image en niveaux de gris comme un tableau NumPy en trois dimensions,
+            mais avec une seule valeur dans la troisième dimension ((hauteur, largeur, 1)).
+            C'est techniquement une image "couleur" mais avec un seul canal.
+            processed_image_np.ndim == 3 (trois dimensions) ET processed_image_np.shape[2] == 1 (la troisième dimension, celle des canaux, a une taille de 1).
+            """
+
+            logging.warning("Input is a 1-channel image. Converting to 3 channels (RGB) for DCT protection.")
+            # Répète le canal unique sur 3 canaux
+            processed_image_np = np.repeat(processed_image_np, 3, axis=2)
+
+            """
+            np.repeat() est utilisé pour répéter des éléments d'un tableau le long d'un axe donné.
+            On repète le tableau processed_image_np (qui est (H, W, 1)) 3 fois le long de l'axis=2 (l'axe des canaux).
+            Le tableau (H, W, 1) devient (H, W, 3). Encore une fois, chaque canal du nouvel "RGB" est une copie du canal de niveaux de gris original.
+            """
+
+        elif processed_image_np.ndim < 3 or processed_image_np.shape[2] < 3:
+            # Ceci gère les images qui ne sont ni N&B ni RGB standard (ex: 2 canaux, ou autre)
+            # Tu peux choisir de lever une erreur ici ou de simplement logguer et retourner
+
+            """
+            Ce dernier elif sert de garde-fou. Il attrape tous les autres cas d'images "non standard" qui ne sont ni des niveaux de gris simples (1 canal, qu'il soit 2D ou 3D) ni des images RGB/BGR classiques (3 canaux).
+            Par exemple, cela pourrait être une image avec 2 canaux (alpha et un autre) ou 4 canaux (RGBA) qui n'est pas encore gérée.
+            processed_image_np.ndim < 3 (moins de 3 dimensions, mais déjà géré par le premier if si c'est 2D), OU processed_image_np.shape[2] < 3 (3 dimensions, mais avec moins de 3 canaux, comme une image à 2 canaux).
+            """
+
+            logging.error("Input image must have at least 3 channels (RGB/BGR) for multi-channel DCT protection, or be a standard grayscale image.")
+            raise ValueError("Unsupported image format: must be grayscale (1-channel) or RGB/BGR (3-channel).")
+            
+            """
+            Nous levons une ValueError pour indiquer clairement que le format d'image d'entrée n'est pas supporté par l'algorithme de protection tel qu'il est conçu (qui nécessite 3 canaux pour la DCT multi-canal).
+            C'est plus robuste que de simplement retourner la copie non modifiée, car cela force l'appelant à gérer un type d'entrée inattendu.
+            """
+
+        # --- ---
+
+        # Itération sur les canaux (R, G, B)
+        # range(3) pour les trois premiers canaux (0, 1, 2) correspondant à R, G, B dans Pillow.
+        for i in range(3):
+            channel_name = ["Red", "Green", "Blue"][i]
+            logging.info(f"Processing channel: {channel_name}")
+            
+            # Génération d'une graine (seed) différente pour chaque canal
+            # channel_seed = 42 + i: Permet de générer un filigrane aléatoire DIFFERENT pour chaque canal.
+            # C'est une bonne pratique pour augmenter la robustesse et la complexité du filigrane.
+            # L'utilisation de 42 est juste un nombre arbitraire "magique" souvent utilisé pour les graines.
+            channel_seed = 42 + i
+
+            # Extraction du canal et conversion en float
+            # processed_image_np[:, :, i]: Sélectionne toutes les lignes, toutes les colonnes,
+            # et le i-ème canal. Cela extrait un tableau 2D (le canal).
+            # .astype(float): La DCT fonctionne mieux avec des nombres flottants, car les
+            # coefficients peuvent être non entiers. On convertit explicitement le canal en float.
+            processed_channel = self._apply_dct_watermark_to_channel(
+                processed_image_np[:, :, i].astype(float),
+                strength,
+                channel_seed
+            )
+            
+            # Réassignation du canal traité
+            # Le canal modifié est remis à sa place dans le tableau d'image complet.
+            processed_image_np[:, :, i] = processed_channel
+
+        logging.info("DCT protection applied to all channels.")
+        
+        return processed_image_np
 
 
     @property

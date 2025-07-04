@@ -299,6 +299,20 @@ def test_dct_watermark_strength_scaling(img_cs50_instance):
     # La différence avec une force élevée doit être significativement plus grande
     assert diff_high > diff_low * 2 # Par exemple, au moins deux fois plus grande, à ajuster
 
-
-
 # End of test _apply_dct_watermark_to_channel()------------------------------
+
+
+# Test apply_dct_watermark()------------------------------
+
+def test_apply_dct_watermark_returns_numpy_array(img_cs50_instance):
+
+    """Vérifie que la fonction retourne bien un tableau NumPy."""
+
+    # Accède au tableau NumPy depuis l'instance
+    img_np = img_cs50_instance.numpy_array
+
+    protected_img_np = img_cs50_instance.apply_dct_watermark(img_np, strength=5.0)
+
+    assert isinstance(protected_img_np, np.ndarray)
+
+# End of test apply_dct_protection()------------------------------
