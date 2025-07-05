@@ -394,7 +394,6 @@ def test_apply_dct_watermark_converts_and_modifies_grayscale_2d_image(sample_gra
     # 4. Vérifie que les valeurs de pixels restent dans la plage 0-255
     assert np.all(protected_img_np >= 0) and np.all(protected_img_np <= 255)
 
-
 def test_apply_dct_watermark_unsupported_channel_count(img_cookie_instance):
     """
     Vérifie que la fonction lève une ValueError pour des images avec un nombre
@@ -420,5 +419,10 @@ def test_apply_dct_watermark_unsupported_channel_count(img_cookie_instance):
     # ce test devra être ajusté ou supprimé pour ce cas.
     # with pytest.raises(ValueError, match="^Unsupported image format: must be grayscale \\(1-channel\\) or RGB/BGR \\(3-channel\\).$"):
         #apply_dct_protection(unsupported_4_channel_image, strength=5.0)
+
+def test_apply_dct_watermark_converts_and_modifies_grayscale_1_channel_image(sample_grayscale_image_np_1_channel, caplog):
+    """
+    Vérifie que la fonction convertit une image 1-canal niveaux de gris en 3 canaux et lui applique la protection.
+    """
 
 # End of test apply_dct_watermark()------------------------------
