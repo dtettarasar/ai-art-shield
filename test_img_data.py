@@ -366,7 +366,7 @@ def test_apply_dct_watermark_modifies_image(img_cs50_instance, img_cookie_instan
     assert np.all(protected_img_np_cookie >= 0) and np.all(protected_img_np_cookie <= 255)
 
 
-def test_apply_dct_protection_converts_and_modifies_grayscale_2d_image(sample_grayscale_image_np, img_cookie_instance, caplog):
+def test_apply_dct_watermark_converts_and_modifies_grayscale_2d_image(sample_grayscale_image_np, img_cookie_instance, caplog):
 
     # Vérifie que la fonction convertit une image 2D niveaux de gris en 3 canaux et lui applique la protection.
 
