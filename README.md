@@ -34,4 +34,53 @@ Beyond CS50P, I plan to work on the following key improvements:
 
 ---
 
+#### Installation:
 
+This project uses `uv` for dependency management, offering a fast and modern development experience.
+
+1.  **Install `uv`** (if you don't have it already):
+
+    If you use `pipx` (recommended for CLI tools):
+    ```bash
+    pipx install uv
+    ```
+    Alternatively, you can install it via `pip`:
+    ```bash
+    pip install uv
+    ```
+    Or, download a standalone executable from the [official uv GitHub releases](https://github.com/astral-sh/uv/releases).
+
+2.  **Install project dependencies and create the virtual environment**:
+
+    Navigate to the project root directory and run:
+    ```bash
+    uv sync
+    ```
+    This command will automatically create a virtual environment (named `.venv` by default) and install all required packages defined in `pyproject.toml` (or `requirements.txt` if you still use it).
+
+3.  **Activate the virtual environment (optional, but good practice)**:
+
+    While `uv run` allows executing scripts without explicit activation, it's good practice to activate the environment if you plan to install other packages or use Python interactively.
+    ```bash
+    source .venv/bin/activate  # macOS/Linux
+    # or
+    .venv\Scripts\activate     # Windows PowerShell
+    # or
+    .venv\Scripts\activate.bat # Windows Command Prompt
+    ```
+
+---
+
+#### Usage:
+
+1. Protect an image
+
+```
+uv run main.py secure --input image.jpg --output image_protected.jpg
+```
+
+2. Test image protection
+
+```
+uv run main.py verify -p img_protected.jpg -o img_original.jpg
+```
