@@ -420,9 +420,19 @@ def test_apply_dct_watermark_unsupported_channel_count(img_cookie_instance):
     # with pytest.raises(ValueError, match="^Unsupported image format: must be grayscale \\(1-channel\\) or RGB/BGR \\(3-channel\\).$"):
         #apply_dct_protection(unsupported_4_channel_image, strength=5.0)
 
-def test_apply_dct_watermark_converts_and_modifies_grayscale_1_channel_image(sample_grayscale_image_np_1_channel, caplog):
+def test_apply_dct_watermark_converts_and_modifies_grayscale_1_channel_image(sample_grayscale_image_np_1_channel, img_cookie_instance, caplog):
+    
     """
     Vérifie que la fonction convertit une image 1-canal niveaux de gris en 3 canaux et lui applique la protection.
     """
+
+    caplog.set_level(logging.WARNING) # Attendre un WARNING pour la conversion
+
+    initial_shape = sample_grayscale_image_np_1_channel.shape # (H, W, 1)
+
+    protected_img_np = img_cookie_instance.apply_dct_watermark(sample_grayscale_image_np_1_channel, strength=5.0)
+
+    # 1. Vérifie que le message d'avertissement de conversion a été loggé
+    assert "Input is a 1-channel image. Converting to 3 channels (RGB) for DCT protection." in caplog.text
 
 # End of test apply_dct_watermark()------------------------------
