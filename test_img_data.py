@@ -1,3 +1,4 @@
+import logging
 import pytest
 
 import PIL
@@ -26,7 +27,6 @@ def test_init_class(img_cs50_instance, img_cookie_instance):
     
     assert img_cs50_instance.img_path == 'test_files/cs50.jpg'
     assert img_cookie_instance.img_path == 'test_files/cookie_monster.webp'
-
 
 # Test for load_file method------------------------------
 
@@ -301,8 +301,19 @@ def test_dct_watermark_strength_scaling(img_cs50_instance):
 
 # End of test _apply_dct_watermark_to_channel()------------------------------
 
-
 # Test apply_dct_watermark()------------------------------
+
+@pytest.fixture
+def sample_grayscale_image_np():
+    """Fixture qui fournit une image NumPy en niveaux de gris simple pour les tests."""
+    # Une image 3x3 en niveaux de gris
+    return np.full((3, 3), 100, dtype=np.uint8)
+
+@pytest.fixture
+def sample_grayscale_image_np_1_channel():
+    """Fixture qui fournit une image NumPy en niveaux de gris avec 1 canal explicite (H, W, 1)."""
+    # Une image 3x3 avec un canal explicite
+    return np.full((3, 3, 1), 100, dtype=np.uint8)
 
 def test_apply_dct_watermark_returns_numpy_array(img_cs50_instance, img_cookie_instance):
 
@@ -353,5 +364,35 @@ def test_apply_dct_watermark_modifies_image(img_cs50_instance, img_cookie_instan
     # Vérifie que les valeurs des pixels restent dans une plage raisonnable (0-255)
     assert np.all(protected_img_np_cs50 >= 0) and np.all(protected_img_np_cs50 <= 255)
     assert np.all(protected_img_np_cookie >= 0) and np.all(protected_img_np_cookie <= 255)
+
+
+def test_apply_dct_protection_converts_and_modifies_grayscale_2d_image(sample_grayscale_image_np, img_cookie_instance, caplog):
+
+    # Vérifie que la fonction convertit une image 2D niveaux de gris en 3 canaux et lui applique la protection.
+
+    # Accède au tableau NumPy depuis l'instance
+    img_grayscale_np = sample_grayscale_image_np
+
+    caplog.set_level(logging.WARNING) # Attendre un WARNING pour la conversion
+
+    initial_shape = img_grayscale_np.shape # (H, W)
+    
+    protected_img_np = img_cookie_instance.apply_dct_watermark(img_grayscale_np, strength=5.0)
+    
+    # 1. Vérifie que le message d'avertissement de conversion a été loggé
+    assert "Input is a grayscale image. Converting to 3 channels (RGB) for DCT protection." in caplog.text
+    
+    # 2. Vérifie que l'image de sortie est maintenant en 3 canaux
+    assert protected_img_np.shape == (initial_shape[0], initial_shape[1], 3)
+    
+    # 3. Vérifie que l'image a bien été modifiée (elle n'est plus identique à l'originale si traitée)
+    # Pour cela, il faut 're-convertir' l'originale en 3 canaux pour la comparaison ou faire une vérif sur un canal
+    # Ici, je compare avec l'originale empilée en 3 canaux.
+    original_3_channels = np.stack([img_grayscale_np, img_grayscale_np, img_grayscale_np], axis=-1)
+    assert not np.array_equal(original_3_channels, protected_img_np)
+    
+    # 4. Vérifie que les valeurs de pixels restent dans la plage 0-255
+    assert np.all(protected_img_np >= 0) and np.all(protected_img_np <= 255)
+
 
 # End of test apply_dct_watermark()------------------------------
