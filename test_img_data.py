@@ -435,4 +435,14 @@ def test_apply_dct_watermark_converts_and_modifies_grayscale_1_channel_image(sam
     # 1. Vérifie que le message d'avertissement de conversion a été loggé
     assert "Input is a 1-channel image. Converting to 3 channels (RGB) for DCT protection." in caplog.text
 
+    # 2. Vérifie que l'image de sortie est maintenant en 3 canaux
+    assert protected_img_np.shape == (initial_shape[0], initial_shape[1], 3)
+
+    # 3. Vérifie que l'image a bien été modifiée
+    original_3_channels = np.repeat(sample_grayscale_image_np_1_channel, 3, axis=2)
+    assert not np.array_equal(original_3_channels, protected_img_np)
+
+    # 4. Vérifie que les valeurs de pixels restent dans la plage 0-255
+    assert np.all(protected_img_np >= 0) and np.all(protected_img_np <= 255)
+
 # End of test apply_dct_watermark()------------------------------
