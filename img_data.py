@@ -287,6 +287,30 @@ class Img_Data:
         logging.info("DCT protection applied to all channels.")
         
         return processed_image_np
+    
+    # --- Méthode de Pipeline de Protection ---
+    def secure_image(self, dct_strength: float = 0, wavelet_strength: float = 0, adversarial_strength: float = 0, qr_opacity: float = 0) -> np.ndarray:
+        
+        """
+        Applique une combinaison de techniques de protection à l'image.
+        Met à jour self.protected_numpy_array avec le résultat final.
+        Retourne le tableau NumPy de l'image protégée.
+        """
+        logging.info("Starting image protection pipeline.")
+
+        # Commencer avec une COPIE de l'array original
+        # Cela garantit qu'on ne travaille JAMAIS directement sur self.numpy_array
+        current_protected_image_np = self.numpy_array.copy()
+
+        if dct_strength > 0:
+
+            current_protected_image_np = self.apply_dct_watermark(current_protected_image_np, strength=dct_strength)
+            logging.info("DCT watermark applied.")
+
+        # Stocker le résultat final du pipeline dans l'attribut de la classe
+        self.protected_numpy_array = current_protected_image_np
+
+        logging.info("Image protection pipeline completed.")
 
 
     @property
@@ -314,3 +338,11 @@ class Img_Data:
     @numpy_array.setter
     def numpy_array(self, value):
         self._numpy_array = value
+
+    @property
+    def protected_numpy_array(self):
+        return self._protected_numpy_array
+    
+    @protected_numpy_array.setter
+    def protected_numpy_array(self, value):
+        self._protected_numpy_array = value

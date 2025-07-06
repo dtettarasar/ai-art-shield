@@ -446,3 +446,32 @@ def test_apply_dct_watermark_converts_and_modifies_grayscale_1_channel_image(sam
     assert np.all(protected_img_np >= 0) and np.all(protected_img_np <= 255)
 
 # End of test apply_dct_watermark()------------------------------
+
+# Test secure_image()
+
+def test_secure_image_protected_numpy_created_cs50(img_cs50_instance):
+
+    """
+    Vérifie que le tableau numpy correspondant à l'image a bien été généré
+    """
+
+    img_cs50_instance.secure_image()
+
+    assert type(img_cs50_instance.protected_numpy_array) == np.ndarray
+    assert img_cs50_instance.protected_numpy_array.ndim == 3 # Doit être un tableau 3D (hauteur, largeur, canaux)
+    assert img_cs50_instance.protected_numpy_array.shape[2] == 3 # Doit avoir 3 canaux (RGB)
+    assert img_cs50_instance.protected_numpy_array.dtype == np.uint8 # Doit être de type uint8 (0-255)
+
+
+def test_secure_image_protected_numpy_created_cookie(img_cookie_instance):
+
+    """
+    Vérifie que le tableau numpy correspondant à l'image a bien été généré
+    """
+
+    img_cookie_instance.secure_image()
+
+    assert type(img_cookie_instance.protected_numpy_array) == np.ndarray
+    assert img_cookie_instance.protected_numpy_array.ndim == 3 # Doit être un tableau 3D (hauteur, largeur, canaux)
+    assert img_cookie_instance.protected_numpy_array.shape[2] == 3 # Doit avoir 3 canaux (RGB)
+    assert img_cookie_instance.protected_numpy_array.dtype == np.uint8 # Doit être de type uint8 (0-255)
