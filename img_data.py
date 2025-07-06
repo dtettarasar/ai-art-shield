@@ -312,6 +312,20 @@ class Img_Data:
 
         logging.info("Image protection pipeline completed.")
 
+    def export_protected_image(self, output_path: str, format: str = None, quality: int = -1):
+
+        """
+        Convertit le tableau NumPy protégé en image PIL et la sauvegarde.
+        
+        Args:
+            output_path (str): Le chemin complet du fichier de sortie.
+            format (str, optional): Le format de l'image (ex: "JPEG", "PNG"). Déduit par défaut de l'extension.
+            quality (int, optional): Qualité pour les formats compressibles (0-100). -1 pour défaut.
+
+        Raises:
+            IOError: En cas d'erreur lors de la conversion ou de la sauvegarde de l'image.
+            ValueError: Si protected_numpy_array n'est pas encore défini.
+        """
 
     @property
     def img_path(self):

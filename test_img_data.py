@@ -475,3 +475,4 @@ def test_secure_image_protected_numpy_created_cookie(img_cookie_instance):
     assert img_cookie_instance.protected_numpy_array.ndim == 3 # Doit être un tableau 3D (hauteur, largeur, canaux)
     assert img_cookie_instance.protected_numpy_array.shape[2] == 3 # Doit avoir 3 canaux (RGB)
     assert img_cookie_instance.protected_numpy_array.dtype == np.uint8 # Doit être de type uint8 (0-255)
+
