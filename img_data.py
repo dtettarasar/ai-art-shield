@@ -337,6 +337,40 @@ class Img_Data:
         if self.protected_numpy_array is None:
             raise ValueError("No protected image array found. Apply protection first.")
         
+        try:
+            protected_img_pil = self.convert_numpy_to_pil(self.protected_numpy_array)
+            logging.debug("Protected NumPy array converted back to PIL Image.")
+
+            # Préparer les arguments de sauvegarde
+            save_kwargs = {}
+            if format:
+                save_kwargs['format'] = format
+            if quality != -1:
+                save_kwargs['quality'] = quality
+            
+            # Extraire le format de l'extension si non spécifié
+            if 'format' not in save_kwargs:
+
+                ext = os.path.splitext(output_path)[1].lstrip('.').upper()
+
+                if ext in Image.registered_extensions(): # Vérifie si Pillow connaît cette extension
+                    save_kwargs['format'] = ext
+                else:
+                    logging.warning(f"Unknown format for extension '{ext}', using default Pillow behavior.")
+
+            protected_img_pil.save(output_path, **save_kwargs)
+            logging.info(f"Protected image saved successfully to '{output_path}'.")
+
+        except (TypeError, ValueError) as e: # Erreurs de convert_numpy_to_pil
+
+            logging.error(f"Data conversion error during image export: {e}")
+            raise IOError(f"Failed to convert or save image due to data issues: {e}") from e
+        
+        except Exception as e: # Capture toute autre erreur générique de sauvegarde (permissions, disque plein, etc.)
+            
+            logging.error(f"An unexpected error occurred while saving the image to '{output_path}': {e}")
+            raise IOError(f"Could not save image to '{output_path}': {e}") from e
+        
 
 
     @property

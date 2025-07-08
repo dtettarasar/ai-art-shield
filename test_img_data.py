@@ -483,7 +483,7 @@ def test_secure_image_protected_numpy_created_cookie(img_cookie_instance):
 
 # Test export_protected_image()
 
-def test_sport_protected_image_value_error(img_cs50_instance):
+def test_export_protected_image_value_error(img_cs50_instance):
 
     """
     Vérifie que la ValueError est bien levée si L'instance d'ImgData n'a pas d'image protégée générée
@@ -493,5 +493,20 @@ def test_sport_protected_image_value_error(img_cs50_instance):
         img_cs50_instance.export_protected_image("dummy_output.jpg")
 
     assert "No protected image array found. Apply protection first." in str(excinfo.value)
+
+def test_export_protected_image_invalid_image_format(img_cs50_instance):
+
+    img_cs50_instance.secure_image()
+
+    """Vérifie que la fonction gère l'erreur pour un format invalide."""
+
+    invalid_format_path = "test_files/not_an_image.txt"
+    with open(invalid_format_path, "w") as f:
+        f.write("Ceci n'est pas une image.")
+
+    with pytest.raises(IOError) as excinfo:
+        img_cs50_instance.export_protected_image(invalid_format_path)
+
+    assert "Failed to convert or save image due to data issues:" in str(excinfo.value)
 
 # End of export_protected_image()------------------------------
