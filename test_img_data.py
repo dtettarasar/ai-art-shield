@@ -1,4 +1,5 @@
 import logging
+import os
 import pytest
 
 import PIL
@@ -483,6 +484,12 @@ def test_secure_image_protected_numpy_created_cookie(img_cookie_instance):
 
 # Test export_protected_image()
 
+# Fixture pour un chemin de fichier de sortie temporaire
+@pytest.fixture
+def temp_output_path(tmp_path):
+    """Fournit un chemin de fichier de sortie temporaire."""
+    return tmp_path / "test_output.png"
+
 def test_export_protected_image_value_error(img_cs50_instance):
 
     """
@@ -506,5 +513,20 @@ def test_export_protected_image_invalid_image_format(img_cs50_instance):
         img_cs50_instance.export_protected_image(invalid_format_path)
 
     assert "Failed to convert or save image due to data issues:" in str(excinfo.value)
+
+
+def test_export_protected_image_success(temp_output_path, img_cs50_instance):
+
+    img_cs50_instance.secure_image()
+
+    """Vérifie que le fichier de l'image a bien été créé après la protection"""
+
+    img_cs50_instance.export_protected_image(temp_output_path)
+
+    # Vérifie que le fichier de sortie a été créé
+    assert temp_output_path.exists()
+
+    # Vérifie que ce n'est pas le même fichier que l'entrée (c'est une nouvelle image)
+    assert os.path.getsize(temp_output_path) > 0
 
 # End of export_protected_image()------------------------------
