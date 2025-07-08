@@ -16,9 +16,14 @@ class Img_Data:
         self.load_file()
         self.convert_pil_to_numpy()
 
-        logging.debug("finish to load file in img data class")
+        # Il sera initialement None, et mis à jour par secure_image()
+        self.protected_numpy_array = None
+
+        logging.debug("Img_Data instance initialized.")
         logging.debug("img file: ")
         logging.debug(self.img_file)
+        logging.debug(f"numpy array shape: {self.numpy_array.shape}")
+        logging.debug(f"protected_numpy_array is initially: {self.protected_numpy_array}")
     
     def load_file(self):
 
@@ -326,6 +331,13 @@ class Img_Data:
             IOError: En cas d'erreur lors de la conversion ou de la sauvegarde de l'image.
             ValueError: Si protected_numpy_array n'est pas encore défini.
         """
+
+        logging.info(f"Attempting to export protected image to '{output_path}'.")
+
+        if self.protected_numpy_array is None:
+            raise ValueError("No protected image array found. Apply protection first.")
+        
+
 
     @property
     def img_path(self):

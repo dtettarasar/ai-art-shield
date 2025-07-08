@@ -28,6 +28,9 @@ def test_init_class(img_cs50_instance, img_cookie_instance):
     assert img_cs50_instance.img_path == 'test_files/cs50.jpg'
     assert img_cookie_instance.img_path == 'test_files/cookie_monster.webp'
 
+    assert img_cs50_instance.protected_numpy_array is None
+    assert img_cookie_instance.protected_numpy_array is None
+
 # Test for load_file method------------------------------
 
 def test_load_image_file(img_cs50_instance, img_cookie_instance):
@@ -476,3 +479,19 @@ def test_secure_image_protected_numpy_created_cookie(img_cookie_instance):
     assert img_cookie_instance.protected_numpy_array.shape[2] == 3 # Doit avoir 3 canaux (RGB)
     assert img_cookie_instance.protected_numpy_array.dtype == np.uint8 # Doit être de type uint8 (0-255)
 
+# End of test secure_image()------------------------------
+
+# Test export_protected_image()
+
+def test_sport_protected_image_value_error(img_cs50_instance):
+
+    """
+    Vérifie que la ValueError est bien levée si L'instance d'ImgData n'a pas d'image protégée générée
+    """
+
+    with pytest.raises(ValueError) as excinfo:
+        img_cs50_instance.export_protected_image("dummy_output.jpg")
+
+    assert "No protected image array found. Apply protection first." in str(excinfo.value)
+
+# End of export_protected_image()------------------------------
