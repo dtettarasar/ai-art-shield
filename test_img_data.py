@@ -500,9 +500,7 @@ def test_export_protected_image_invalid_image_format(img_cs50_instance):
 
     """Vérifie que la fonction gère l'erreur pour un format invalide."""
 
-    invalid_format_path = "test_files/not_an_image.txt"
-    with open(invalid_format_path, "w") as f:
-        f.write("Ceci n'est pas une image.")
+    invalid_format_path = "test_files/test_files.txt"
 
     with pytest.raises(IOError) as excinfo:
         img_cs50_instance.export_protected_image(invalid_format_path)
