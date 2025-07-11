@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Art Shield</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 600px; margin: 50px auto; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #0056b3; text-align: center; margin-bottom: 30px; }
+        form div { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="file"], input[type="range"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: #ddd;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        button:hover { background-color: #0056b3; }
+        .errorlist { color: red; list-style-type: none; padding: 0; margin-top: 5px; }
+        .success-message { color: green; text-align: center; margin-top: 20px; }
+        .image-preview { text-align: center; margin-top: 20px; }
+        .image-preview img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; margin-top: 10px; }
+        #strengthValue { font-weight: bold; margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Protégez Votre Image avec un Filigrane Invisible</h1>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %} {# Très important pour la sécurité de Django #}
+
+            <div>
+                <label for="id_image">Fichier Image :</label>
+                {{ form.image }} {# Django rendra l'input file ici #}
+                {% if form.image.errors %}<ul class="errorlist">{% for error in form.image.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+
+            <div>
+                <label for="id_strength">Force de Protection : <span id="strengthValue">0.5</span></label>
+                {# Le champ pour la force de protection #}
+                {{ form.strength }}
+                {% if form.strength.errors %}<ul class="errorlist">{% for error in form.strength.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+            
+            <button type="submit">Appliquer le Filigrane</button>
+        </form>
+
+        {% if protected_image_url %}
+            <div class="image-preview">
+                <h2>Votre Image Protégée :</h2>
+                <img src="{{ protected_image_url }}" alt="Image Protégée">
+                <p><a href="{{ protected_image_url }}" download>Télécharger l'image</a></p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Met à jour la valeur affichée du slider de force de protection
+        var strengthSlider = document.getElementById('id_strength');
+        var strengthValueSpan = document.getElementById('strengthValue');
+
+        if (strengthSlider && strengthValueSpan) {
+            strengthValueSpan.textContent = strengthSlider.value; // Initial value
+
+            strengthSlider.oninput = function() {
+                strengthValueSpan.textContent = this.value;
+            };
+        }
+    </script>
+</body>
+</html>
