@@ -47,6 +47,8 @@ def upload_image_view(request):
             print("uploaded_file_path: ")
             print(uploaded_file_path)
 
+            # --- A Faire: Traitement de l'image avec Img_Data ---
+
 
         else:
             # Si le formulaire n'est pas valide (ex: mauvais type de fichier, force hors limites)
