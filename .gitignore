@@ -17,8 +17,13 @@ Thumbs.db
 test_files/output_files/*
 !test_files/output_files/description.txt
 
+
 # --- Django specific ---
-db.sqlite3                  # Base de données SQLite par défaut
-media/                      # Dossier pour les fichiers uploadés par les utilisateurs (MEDIA_ROOT)
-static_collected/           # Dossier pour les fichiers statiques collectés en production (STATIC_ROOT)
-.env                        # Fichiers d'environnement (si vous en utilisez pour les secrets)
+# Base de données SQLite par défaut
+# Dossier pour les fichiers uploadés par les utilisateurs (MEDIA_ROOT)
+# Dossier pour les fichiers statiques collectés en production (STATIC_ROOT)
+# Fichiers d'environnement (si vous en utilisez pour les secrets)
+db.sqlite3                  
+media/                      
+static_collected/           
+.env
