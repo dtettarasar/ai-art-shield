@@ -15,9 +15,9 @@ class ImageUploadForm(forms.Form):
     strength = forms.DecimalField(
         label="Force de protection",
         min_value=0.0,
-        max_value=1.0,
-        initial=0.5, # Valeur par défaut
-        max_digits=3, # Ex: 0.00 à 1.00
+        max_value=30.0,
+        initial=15.0, # Valeur par défaut
+        max_digits=4, # Ex: 0.0 à 30.0
         decimal_places=2, # Deux chiffres après la virgule
-        widget=forms.NumberInput(attrs={'type': 'range', 'step': '0.01'}) # Pour le rendre un slider HTML
+        widget=forms.NumberInput(attrs={'type': 'range', 'step': '0.10'}) # Pour le rendre un slider HTML
     )
