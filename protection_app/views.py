@@ -83,10 +83,22 @@ def upload_image_view(request):
 
                 print(img_to_protect)
             
-            except (IOError, UnidentifiedImageError) as e:
+            except (IOError, UnidentifiedImageError, ValueError, RuntimeError) as e:
 
-                print(e)
-                pass
+                # Si l'image ne peut pas être chargée ou identifiée par Img_Data
+                # Ajoute l'erreur au formulaire pour l'afficher à l'utilisateur
+                form.add_error(None, f"Impossible de charger ou traiter l'image : {e}")
+
+                # print(e)
+
+                # Rendre le template avec le formulaire et l'erreur
+                # Il est important de retourner le rendu ici pour arrêter le traitement du POST
+                return render(request, 'protection_app/upload_image.html', {'form': form})
+            
+            finally:
+                # Nettoyer l'image originale uploadée si tu ne veux pas la garder.
+                # Dans notre cas, on la garde dans le dossier 'original'.
+                pass # Ne rien faire ici si tu conserves l'original
 
 
         else:
