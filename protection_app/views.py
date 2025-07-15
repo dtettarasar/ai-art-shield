@@ -86,6 +86,13 @@ def upload_image_view(request):
                 #float(protection_strength)
 
                 img_to_protect.secure_image(dct_strength=float(protection_strength))
+
+                # nom complet du fichier de sortie (image avec protection)
+
+                protected_img_file_path = os.path.join(protected_file_output_dir, protected_filename_with_ext)
+
+                print("protected_img_file_path: ")
+                print(protected_img_file_path)
             
             except (IOError, UnidentifiedImageError, ValueError, RuntimeError) as e:
 
