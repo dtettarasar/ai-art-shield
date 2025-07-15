@@ -93,6 +93,8 @@ def upload_image_view(request):
 
                 print("protected_img_file_path: ")
                 print(protected_img_file_path)
+
+                img_to_protect.export_protected_image(output_path=protected_img_file_path)
             
             except (IOError, UnidentifiedImageError, ValueError, RuntimeError) as e:
 
