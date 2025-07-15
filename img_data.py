@@ -28,6 +28,10 @@ class Img_Data:
             f"protected_numpy_array is initially: {self.protected_numpy_array}"
         )
 
+    def __str__(self):
+
+        return f"Img_Data(file='{self.img_file}', Path: '{self.img_path}', Size (width, height): {self.img_file.size})"
+
     def load_file(self):
         """
         Loads an image file using Pillow and performs initial checks.

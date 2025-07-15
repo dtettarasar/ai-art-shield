@@ -5,6 +5,8 @@ from django.http import HttpResponse, FileResponse
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 
+from PIL import UnidentifiedImageError
+
 from .forms import ImageUploadForm
 
 import uuid # pour générer des IDs uniques
@@ -72,6 +74,19 @@ def upload_image_view(request):
             print(f"Original image saved at: {original_file_path}")
 
             # --- 3. Traitement de l'image avec Img_Data ---
+
+            img_to_protect = None
+
+            try:
+
+                img_to_protect = Img_Data(original_file_path)
+
+                print(img_to_protect)
+            
+            except (IOError, UnidentifiedImageError) as e:
+
+                print(e)
+                pass
 
 
         else:
