@@ -82,6 +82,10 @@ def upload_image_view(request):
                 img_to_protect = Img_Data(original_file_path)
 
                 print(img_to_protect)
+
+                #float(protection_strength)
+
+                img_to_protect.secure_image(dct_strength=float(protection_strength))
             
             except (IOError, UnidentifiedImageError, ValueError, RuntimeError) as e:
 
