@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,6 +29,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Charge le fichier .env au démarrage
+load_dotenv()
 
 # Application definition
 
@@ -134,3 +137,14 @@ MEDIA_PROTECTED_DIR = os.path.join(MEDIA_ROOT, 'protected')
 
 os.makedirs(MEDIA_ORIGINAL_DIR, exist_ok=True)
 os.makedirs(MEDIA_PROTECTED_DIR, exist_ok=True)
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('POSTGRES_HOST'),
+        'PORT': os.getenv('POSTGRES_PORT'),
+    }
+}
