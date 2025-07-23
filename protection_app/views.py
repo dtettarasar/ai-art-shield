@@ -95,6 +95,22 @@ def upload_image_view(request):
                 print(protected_img_file_path)
 
                 img_to_protect.export_protected_image(output_path=protected_img_file_path)
+
+                # --- Générer l'URL publique de l'image protégée ---
+                # On combine l'URL de base des médias avec le chemin relatif du fichier
+                # Le chemin relatif est 'protected/' + le nom du fichier
+                protected_image_url = os.path.join(settings.MEDIA_URL, 'protected', protected_filename_with_ext)
+
+                print(f"Protected image URL: {protected_image_url}")
+
+                # --- Mettre à jour le contexte et rendre la page ---
+                context = {
+                    'form': form,
+                    'protected_image_url': protected_image_url
+                }
+
+                # La page est rendue ici avec l'URL de l'image pour affichage
+                return render(request, 'protection_app/upload_image.html', context)
             
             except (IOError, UnidentifiedImageError, ValueError, RuntimeError) as e:
 

@@ -125,13 +125,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Settings for user-uploaded media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media' # Définit le chemin absolu vers le dossier 'media' à la racine du projet
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # Définit le chemin absolu vers le dossier 'media' à la racine du projet
 
 # Sous-dossiers spécifiques pour les images
-# Chemin absolu vers le dossier où les images originales uploadées seront stockées
-MEDIA_ORIGINAL_DIR = MEDIA_ROOT / 'original'
-# Chemin absolu vers le dossier où les images protégées seront stockées
-MEDIA_PROTECTED_DIR = MEDIA_ROOT / 'protected'
+# Sous-dossiers spécifiques pour les images
+MEDIA_ORIGINAL_DIR = os.path.join(MEDIA_ROOT, 'original')
+MEDIA_PROTECTED_DIR = os.path.join(MEDIA_ROOT, 'protected')
 
 os.makedirs(MEDIA_ORIGINAL_DIR, exist_ok=True)
 os.makedirs(MEDIA_PROTECTED_DIR, exist_ok=True)
