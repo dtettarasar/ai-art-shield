@@ -3,17 +3,20 @@
 from django.shortcuts import render
 from django.http import HttpResponse, FileResponse
 from django.conf import settings
-from django.core.files.storage import FileSystemStorage
 
-from PIL import UnidentifiedImageError
+# from django.core.files.storage import FileSystemStorage
+
+# from PIL import UnidentifiedImageError
 
 from .forms import ImageUploadForm
 
-import uuid # pour générer des IDs uniques
+# import uuid # pour générer des IDs uniques
 
-import os
+# import os
 
-from img_data import Img_Data
+# from img_data import Img_Data
+
+from .services import Protection_App_Services
 
 def upload_image_view(request):
 
@@ -40,94 +43,29 @@ def upload_image_view(request):
             uploaded_image = form.cleaned_data['image']
             protection_strength = form.cleaned_data['strength']
 
-            print("uploaded_image: ")
-            print(uploaded_image)
+            # Appelle la méthode statique directement sur la classe
+            protected_image_instance, error_message = Protection_App_Services.process_and_protect_image(
+                uploaded_image,
+                protection_strength
+            )
 
-            print("protection_strength: ")
-            print(protection_strength)
+            if protected_image_instance:
+                # Succès: utilise l'instance retournée pour obtenir l'URL
+                protected_image_url = protected_image_instance.get_protected_image_url()
+                print(f"Protected image URL for display: {protected_image_url}")
+            else:
+                # Échec: ajoute l'erreur au formulaire pour l'affichage
+                form.add_error(None, error_message)
+                print(f"Error in view: {error_message}")
 
-            # --- 1. Gérer le nom de fichier unique et les chemins ---
-            # Génère un UUID unique pour le nom de base du fichier
-            unique_filename_base = str(uuid.uuid4())
+            # --- Mettre à jour le contexte et rendre la page ---
+            context = {
+                'form': form,
+                'protected_image_url': protected_image_url
+            }
 
-            # Récupère l'extension originale du fichier
-            file_extension = os.path.splitext(uploaded_image.name)[1]
-
-            # Nom complet du fichier original (ID unique + extension)
-            original_filename_with_ext = f"{unique_filename_base}{file_extension}"
-
-            # Nom complet du fichier protégé (ID unique + '_p' + extension)
-            protected_filename_with_ext = f"{unique_filename_base}_p{file_extension}"
-
-            # Définir le chemin de sauvegarde de l'image originale
-            original_file_path = os.path.join(settings.MEDIA_ORIGINAL_DIR, original_filename_with_ext)
-
-            # Définir le chemin de sauvegarde de l'image protégée (utilisé par Img_Data)
-            # Img_Data aura besoin du répertoire de sortie et du nom de fichier souhaité
-            protected_file_output_dir = settings.MEDIA_PROTECTED_DIR
-
-            # --- 2. Sauvegarde de l'image originale uploadée ---
-            # Utilise un gestionnaire de stockage pour sauvegarder le fichier
-            fs = FileSystemStorage(location=settings.MEDIA_ORIGINAL_DIR)
-            fs.save(original_filename_with_ext, uploaded_image) # Sauvegarde l'image dans le dossier 'original'
-
-            print(f"Original image saved at: {original_file_path}")
-
-            # --- 3. Traitement de l'image avec Img_Data ---
-
-            img_to_protect = None
-
-            try:
-
-                img_to_protect = Img_Data(original_file_path)
-
-                print(img_to_protect)
-
-                #float(protection_strength)
-
-                img_to_protect.secure_image(dct_strength=float(protection_strength))
-
-                # nom complet du fichier de sortie (image avec protection)
-
-                protected_img_file_path = os.path.join(protected_file_output_dir, protected_filename_with_ext)
-
-                print("protected_img_file_path: ")
-                print(protected_img_file_path)
-
-                img_to_protect.export_protected_image(output_path=protected_img_file_path)
-
-                # --- Générer l'URL publique de l'image protégée ---
-                # On combine l'URL de base des médias avec le chemin relatif du fichier
-                # Le chemin relatif est 'protected/' + le nom du fichier
-                protected_image_url = os.path.join(settings.MEDIA_URL, 'protected', protected_filename_with_ext)
-
-                print(f"Protected image URL: {protected_image_url}")
-
-                # --- Mettre à jour le contexte et rendre la page ---
-                context = {
-                    'form': form,
-                    'protected_image_url': protected_image_url
-                }
-
-                # La page est rendue ici avec l'URL de l'image pour affichage
-                return render(request, 'protection_app/upload_image.html', context)
-            
-            except (IOError, UnidentifiedImageError, ValueError, RuntimeError) as e:
-
-                # Si l'image ne peut pas être chargée ou identifiée par Img_Data
-                # Ajoute l'erreur au formulaire pour l'afficher à l'utilisateur
-                form.add_error(None, f"Impossible de charger ou traiter l'image : {e}")
-
-                # print(e)
-
-                # Rendre le template avec le formulaire et l'erreur
-                # Il est important de retourner le rendu ici pour arrêter le traitement du POST
-                return render(request, 'protection_app/upload_image.html', {'form': form})
-            
-            finally:
-                # Nettoyer l'image originale uploadée si tu ne veux pas la garder.
-                # Dans notre cas, on la garde dans le dossier 'original'.
-                pass # Ne rien faire ici si tu conserves l'original
+            # La page est rendue ici avec l'URL de l'image pour affichage
+            return render(request, 'protection_app/upload_image.html', context)
 
 
         else:

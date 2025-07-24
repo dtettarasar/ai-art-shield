@@ -11,6 +11,11 @@ docker-up-prod:
 docker-up-dev:
 	docker compose up
 
+# Construire et relancer les conteneurs (avec reconstruction de l'image si des changements ont été faits dans le Dockerfile ou le code)
+# Utilisation : make docker-build
+docker-build:
+	docker compose up -d --build
+
 # Arrêter et supprimer les conteneurs
 # Utilisation : make docker-down
 docker-down:
@@ -21,6 +26,11 @@ docker-down:
 # Note : Cette commande est principalement utile si tu as lancé docker-up-prod et que tu veux voir les logs du serveur web spécifiquement
 runserver:
 	docker compose logs -f web
+
+# Créer de nouvelles migrations basées sur les changements de modèles (pour la protection_app)
+# Utilisation : make makemigrations
+makemigrations-protection-app:
+	docker compose exec web uv run python manage.py makemigrations protection_app
 
 # Lancer les migrations à l'intérieur du conteneur
 # Utilisation : make migrate

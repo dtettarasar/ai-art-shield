@@ -2,9 +2,11 @@ from django.db import models
 from django.conf import settings
 import datetime
 
+import uuid
+
 class ProtectedImage(models.Model):
     # Un identifiant unique (UUID) pour le fichier, qui est aussi la clé primaire de la ligne.
-    uuid = models.UUIDField(primary_key=True, editable=False)
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     # Le nom du fichier image original (pour l'affichage à l'utilisateur)
     original_filename = models.CharField(max_length=255)
@@ -16,7 +18,7 @@ class ProtectedImage(models.Model):
     original_image_path = models.CharField(max_length=255)
 
     # La force de protection appliquée (DecimalField pour plus de précision)
-    protection_strength = models.DecimalField(max_digits=3, decimal_places=2)
+    protection_strength = models.DecimalField(max_digits=5, decimal_places=2)
 
     # Date et heure de la protection
     creation_date = models.DateTimeField(auto_now_add=True)
