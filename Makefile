@@ -16,10 +16,11 @@ docker-up-dev:
 docker-down:
 	docker compose down
 
-# Lancer le serveur de développement Django à l'intérieur du conteneur
+# Lancer le serveur de développement Django à l'intérieur du conteneur (pour le debug)
 # Utilisation : make runserver
+# Note : Cette commande est principalement utile si tu as lancé docker-up-prod et que tu veux voir les logs du serveur web spécifiquement
 runserver:
-	docker compose exec web uv run python manage.py runserver 0.0.0.0:8000
+	docker compose logs -f web
 
 # Lancer les migrations à l'intérieur du conteneur
 # Utilisation : make migrate
