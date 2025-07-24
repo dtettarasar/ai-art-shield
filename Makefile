@@ -1,10 +1,15 @@
 # Makefile
 # Raccourcis pour les commandes du projet Django avec Docker
 
-# Lancer les conteneurs en mode détaché
-# Utilisation : make docker-up
-docker-up:
+# Lancer les conteneurs en mode détaché (pour la production ou l'environnement de test sur serveur)
+# Utilisation : make docker-up-prod
+docker-up-prod:
 	docker compose up -d
+
+# Lancer les conteneurs et afficher les logs (pour le développement local)
+# Utilisation : make docker-up-dev
+docker-up-dev:
+	docker compose up
 
 # Arrêter et supprimer les conteneurs
 # Utilisation : make docker-down
