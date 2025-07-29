@@ -28,7 +28,7 @@ runserver:
 	docker compose logs -f web
 
 # Créer de nouvelles migrations basées sur les changements de modèles (pour la protection_app)
-# Utilisation : make makemigrations
+# Utilisation : make makemigrations-protection-app
 makemigrations-protection-app:
 	docker compose exec web uv run python manage.py makemigrations protection_app
 
