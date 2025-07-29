@@ -157,3 +157,15 @@ DATABASES = {
         'PORT': env('POSTGRES_PORT'), # Ou env('POSTGRES_PORT')
     }
 }
+
+# --- DEBUGGING / LOGGING VARIABLES ---
+if DEBUG: # N'affiche ces infos que si le mode DEBUG est activé (environnement de dev)
+    print("\n--- DEBUGGING ENVIRONMENT VARIABLES (visible only in dev mode) ---")
+    print(f"DJANGO_SECRET_KEY: {'*' * len(SECRET_KEY) if SECRET_KEY else 'NOT SET'}") # Ne pas afficher la clé réelle
+    print(f"DEBUG: {DEBUG}")
+    print(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+    print(f"POSTGRES_DB: {env('POSTGRES_DB')}")
+    print(f"POSTGRES_USER: {env('POSTGRES_USER')}")
+    print(f"POSTGRES_HOST: {env('POSTGRES_HOST')}")
+    print(f"POSTGRES_PORT: {env('POSTGRES_PORT')}")
+    print("-------------------------------------------------------------------\n")
