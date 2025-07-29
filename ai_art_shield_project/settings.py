@@ -24,12 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-+kmqf@^g8vz^^_l=m4jiowz2*i9rz39b5p37itk8(ne(g02y8c"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+# SECRET_KEY = "django-insecure-+kmqf@^g8vz^^_l=m4jiowz2*i9rz39b5p37itk8(ne(g02y8c"
 
 # Charge le fichier .env au démarrage
 load_dotenv()
@@ -52,6 +47,17 @@ env = environ.Env(
 # Cela doit être fait avant d'accéder aux variables
 # Le chemin est important : env.read_env() va chercher .env dans le BASE_DIR par défaut.
 env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# --- Variables de configuration de l'application ---
+
+# SECRET_KEY : Essentielle pour la sécurité de Django
+SECRET_KEY = env('DJANGO_SECRET_KEY')
+
+# DEBUG : Mode de débogage
+DEBUG = env('DJANGO_DEBUG')
+
+# ALLOWED_HOSTS : Hôtes autorisés
+ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS')
 
 # Application definition
 
