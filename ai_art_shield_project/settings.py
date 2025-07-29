@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+import environ
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,6 +33,25 @@ ALLOWED_HOSTS = []
 
 # Charge le fichier .env au démarrage
 load_dotenv()
+
+# Initialise django-environ
+env = environ.Env(
+    # Définis les types par défaut et les valeurs par défaut si la variable n'est pas trouvée
+    DJANGO_SECRET_KEY=(str, 'your-secret-key-for-dev-fallback'), # Chaîne de caractères
+    DJANGO_DEBUG=(bool, False), # Booléen (sera converti de "True"/"False")
+    DJANGO_ALLOWED_HOSTS=(list, ['127.0.0.1', 'localhost']), # Liste de chaînes (sera convertie de "host1,host2")
+    # Pour la base de données, tu peux aussi les définir ici si tu veux utiliser env.db()
+    POSTGRES_DB=(str, 'ai_art_shield_db_dev'),
+    POSTGRES_USER=(str, 'myuser_dev'),
+    POSTGRES_PASSWORD=(str, 'mypassword_dev'),
+    POSTGRES_HOST=(str, 'db'),
+    POSTGRES_PORT=(str, '5432'),
+)
+
+# Charge les variables d'environnement depuis .env
+# Cela doit être fait avant d'accéder aux variables
+# Le chemin est important : env.read_env() va chercher .env dans le BASE_DIR par défaut.
+env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Application definition
 
@@ -72,17 +93,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "ai_art_shield_project.wsgi.application"
-
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
 
 
 # Password validation
@@ -141,10 +151,10 @@ os.makedirs(MEDIA_PROTECTED_DIR, exist_ok=True)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_PORT'),
+        'NAME': env('POSTGRES_DB'), # Ou env('POSTGRES_DB')
+        'USER': env('POSTGRES_USER'), # env('POSTGRES_USER')
+        'PASSWORD': env('POSTGRES_PASSWORD'), # Ou env('POSTGRES_PASSWORD')
+        'HOST': env('POSTGRES_HOST'), # Ou env('POSTGRES_HOST')
+        'PORT': env('POSTGRES_PORT'), # Ou env('POSTGRES_PORT')
     }
 }
