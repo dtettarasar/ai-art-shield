@@ -169,3 +169,26 @@ if DEBUG: # N'affiche ces infos que si le mode DEBUG est activé (environnement 
     print(f"POSTGRES_HOST: {env('POSTGRES_HOST')}")
     print(f"POSTGRES_PORT: {env('POSTGRES_PORT')}")
     print("-------------------------------------------------------------------\n")
+
+# Définition des LOGGING
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'protection_app': { # Crée un logger spécifique pour votre application
+            'handlers': ['console'],
+            'level': 'DEBUG', # Changez à DEBUG pour voir tous les logs de votre app
+            'propagate': True,
+        },
+    },
+}

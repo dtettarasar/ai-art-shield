@@ -7,6 +7,13 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from PIL import UnidentifiedImageError
 
+from django.utils import timezone
+
+import logging # Importe le module de logging
+
+# Initialise un logger pour ce module
+logger = logging.getLogger(__name__)
+
 from .models import ProtectedImage # Importe ton modèle
 from img_data import Img_Data # Importe ta classe Img_Data
 
@@ -28,6 +35,8 @@ class Protection_App_Services:
                 Retourne l'instance ProtectedImage si succès, None sinon.
                 Retourne un message d'erreur si échec, None sinon.
         """
+
+        logger.info("\n--- Début du traitement de l'image ---")
 
         try:
 
@@ -53,24 +62,32 @@ class Protection_App_Services:
             original_relative_path = os.path.join('original', original_filename_with_ext)
             protected_relative_path = os.path.join('protected', protected_filename_with_ext)
 
+            logger.info(f"Génération des chemins :")
+            logger.info(f"  - Nom original: {uploaded_image.name}")
+            logger.info(f"  - Chemin de l'original: {original_full_path}")
+            logger.info(f"  - Chemin du protégé: {protected_full_path}")
 
             # --- 2. Sauvegarde de l'image originale uploadée ---
             fs_original = FileSystemStorage(location=settings.MEDIA_ORIGINAL_DIR)
             fs_original.save(original_filename_with_ext, uploaded_image)
-            print(f"Original image saved at: {original_full_path}")
+            print(f"Sauvegarde de l'image originale réussie.")
+            print(f"Chemin de la sauvegarde: {original_full_path}")
 
             # --- 3. Traitement de l'image avec Img_Data ---
+            print("Début du processus de protection de l'image...")
             img_to_protect = Img_Data(original_full_path)
             img_to_protect.secure_image(dct_strength=float(protection_strength))
 
             # nom complet du fichier de sortie (image avec protection)
             img_to_protect.export_protected_image(output_path=protected_full_path)
             print(f"Protected image saved at: {protected_full_path}")
+            print(f"Image protégée sauvegardée avec succès.")
 
             # --- 4. Enregistrement dans la base de données ---
             # Calcule la date d'expiration (ex: 7 jours après la création)
             # Tu peux ajuster cette durée selon tes besoins
-            expiration_date = datetime.datetime.now() + datetime.timedelta(days=7)
+            print("Début de l'enregistrement des métadonnées dans la base de données...")
+            expiration_date = timezone.now() + datetime.timedelta(days=7)
 
             protected_image_instance = ProtectedImage.objects.create(
                 uuid=unique_filename_base, # L'UUID est généré par défaut par models.UUIDField, mais on le passe explicitement ici
@@ -80,7 +97,14 @@ class Protection_App_Services:
                 protection_strength=float(protection_strength),
                 expiration_date=expiration_date
             )
-            print(f"ProtectedImage entry created in DB: {protected_image_instance.uuid}")
+            
+            print(f"L'objet ProtectedImage a été créé avec succès dans la base de données.")
+            print(f"  - UUID: {protected_image_instance.uuid}")
+            print(f"  - Nom du fichier: {protected_image_instance.original_filename}")
+            print(f"  - Chemin relatif du protégé: {protected_image_instance.protected_image_path}")
+            print(f"  - Date d'expiration: {protected_image_instance.expiration_date}")
+
+            print("--- Fin du traitement de l'image (SUCCÈS) ---\n")
 
             return protected_image_instance, None # Succès, retourne l'instance et pas d'erreur
 
