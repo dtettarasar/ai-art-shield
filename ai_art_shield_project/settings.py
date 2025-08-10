@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 
 import environ
+import gunicorn
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -150,11 +151,11 @@ os.makedirs(MEDIA_PROTECTED_DIR, exist_ok=True)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('POSTGRES_DB'), # Ou env('POSTGRES_DB')
-        'USER': env('POSTGRES_USER'), # env('POSTGRES_USER')
-        'PASSWORD': env('POSTGRES_PASSWORD'), # Ou env('POSTGRES_PASSWORD')
-        'HOST': env('POSTGRES_HOST'), # Ou env('POSTGRES_HOST')
-        'PORT': env('POSTGRES_PORT'), # Ou env('POSTGRES_PORT')
+        'NAME': env('POSTGRES_DB'), 
+        'USER': env('POSTGRES_USER'), 
+        'PASSWORD': env('POSTGRES_PASSWORD'), 
+        'HOST': env('POSTGRES_HOST'), 
+        'PORT': env('POSTGRES_PORT'),
     }
 }
 
