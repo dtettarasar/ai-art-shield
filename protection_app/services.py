@@ -80,13 +80,13 @@ class Protection_App_Services:
 
             # nom complet du fichier de sortie (image avec protection)
             img_to_protect.export_protected_image(output_path=protected_full_path)
-            print(f"Protected image saved at: {protected_full_path}")
-            print(f"Image protégée sauvegardée avec succès.")
+            logger.info(f"Protected image saved at: {protected_full_path}")
+            logger.info(f"Image protégée sauvegardée avec succès.")
 
             # --- 4. Enregistrement dans la base de données ---
             # Calcule la date d'expiration (ex: 7 jours après la création)
             # Tu peux ajuster cette durée selon tes besoins
-            print("Début de l'enregistrement des métadonnées dans la base de données...")
+            logger.info("Début de l'enregistrement des métadonnées dans la base de données...")
             expiration_date = timezone.now() + datetime.timedelta(days=7)
 
             protected_image_instance = ProtectedImage.objects.create(
@@ -98,13 +98,13 @@ class Protection_App_Services:
                 expiration_date=expiration_date
             )
             
-            print(f"L'objet ProtectedImage a été créé avec succès dans la base de données.")
-            print(f"  - UUID: {protected_image_instance.uuid}")
-            print(f"  - Nom du fichier: {protected_image_instance.original_filename}")
-            print(f"  - Chemin relatif du protégé: {protected_image_instance.protected_image_path}")
-            print(f"  - Date d'expiration: {protected_image_instance.expiration_date}")
+            logger.info(f"L'objet ProtectedImage a été créé avec succès dans la base de données.")
+            logger.info(f"  - UUID: {protected_image_instance.uuid}")
+            logger.info(f"  - Nom du fichier: {protected_image_instance.original_filename}")
+            logger.info(f"  - Chemin relatif du protégé: {protected_image_instance.protected_image_path}")
+            logger.info(f"  - Date d'expiration: {protected_image_instance.expiration_date}")
 
-            print("--- Fin du traitement de l'image (SUCCÈS) ---\n")
+            logger.info("--- Fin du traitement de l'image (SUCCÈS) ---\n")
 
             return protected_image_instance, None # Succès, retourne l'instance et pas d'erreur
 
@@ -112,13 +112,13 @@ class Protection_App_Services:
         except (IOError, UnidentifiedImageError, ValueError, RuntimeError) as e:
             # Gère les erreurs de traitement d'image ou de conversion
             error_message = f"Impossible de charger ou traiter l'image : {e}"
-            print(f"Error during image processing: {error_message}")
+            logger.error(f"Error during image processing: {error_message}")
             return None, error_message # Échec, retourne None pour l'instance et le message d'erreur
         
         except Exception as e:
             # Gère toute autre erreur inattendue
             error_message = f"Une erreur inattendue est survenue : {e}"
-            print(f"Unexpected error: {error_message}")
+            logger.error(f"Unexpected error: {error_message}")
             return None, error_message
         
         pass
