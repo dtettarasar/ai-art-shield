@@ -27,6 +27,11 @@ docker-down:
 runserver:
 	docker compose logs -f web
 
+# Redémarrer le conteneur du serveur web pour appliquer les changements de code
+# Utilisation : make restart-server
+restart-server:
+	docker compose restart web
+
 # Créer de nouvelles migrations basées sur les changements de modèles (pour la protection_app)
 # Utilisation : make makemigrations-protection-app
 makemigrations-protection-app:
@@ -65,4 +70,4 @@ clean-images:
 clean-all:
 	docker system prune -a --volumes
 
-.PHONY: docker-up-prod docker-up-dev docker-build docker-down runserver makemigrations-protection-app migrate test install clean-volumes clean-images clean-all
+.PHONY: docker-up-prod docker-up-dev docker-build docker-down runserver restart-server makemigrations-protection-app migrate test install clean-volumes clean-images clean-all

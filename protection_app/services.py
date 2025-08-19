@@ -70,8 +70,8 @@ class Protection_App_Services:
             # --- 2. Sauvegarde de l'image originale uploadée ---
             fs_original = FileSystemStorage(location=settings.MEDIA_ORIGINAL_DIR)
             fs_original.save(original_filename_with_ext, uploaded_image)
-            print(f"Sauvegarde de l'image originale réussie.")
-            print(f"Chemin de la sauvegarde: {original_full_path}")
+            logger.info(f"Sauvegarde de l'image originale réussie.")
+            logger.info(f"Chemin de la sauvegarde: {original_full_path}")
 
             # --- 3. Traitement de l'image avec Img_Data ---
             print("Début du processus de protection de l'image...")
