@@ -47,3 +47,22 @@ test:
 # Utilisation : make install
 install:
 	uv sync
+
+# --- Commandes de nettoyage ---
+
+# Nettoyer les volumes de données Docker non utilisés
+# Utilisation : make clean-volumes
+clean-volumes:
+	docker volume prune
+
+# Nettoyer les images Docker non utilisées par des conteneurs
+# Utilisation : make clean-images
+clean-images:
+	docker image prune -a
+
+# Nettoyage complet de l'environnement Docker (supprime tout ce qui n'est pas utilisé, y compris les conteneurs, volumes et images)
+# Utilisation : make clean-all
+clean-all:
+	docker system prune -a --volumes
+
+.PHONY: docker-up-prod docker-up-dev docker-build docker-down runserver makemigrations-protection-app migrate test install clean-volumes clean-images clean-all
